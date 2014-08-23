@@ -1,6 +1,27 @@
 #!/usr/bin/python
+
+"""
+program simulation of the Monty Hall problem.
+
+author: Christopher Sprague
+"""
+
 import random , sys
 
+"""
+program usage statement
+"""
+def usage():
+	print "usage: python3 MontyHall.py [-p] [-n=(number_of_tests)] [-h]"
+	print " -p 		turn on print statements for reports of each test"
+	print " -n=(#)		specify the number of tests to run. more tests=higher accuracy"
+	print " -h 		print usage/help statement"
+
+"""
+given an exposed door, a door that was initially chosen before the exposition,
+and a boolean asking whether or not the player will switch doors, determine
+which door will ultimately be selected in this test.
+"""
 def which_door(exposed, chosen, switch):
 	if not switch:
 		return chosen
@@ -9,6 +30,15 @@ def which_door(exposed, chosen, switch):
 		if chosen != door and exposed != door:
 			return door
 
+"""
+run the tests.
+with PRINT set to True, each test will report what happens (the door that
+was picked, exposed, selected afterwards, etc.)
+
+switcherino is also a boolean which is used to specify whether or not in this
+test we are considering the case in which the user picks the first door or 
+if they switch the door after the goat is exposed.
+"""
 def do_the_stuff(switcherino, PRINT=False):
 	the_car = random.randint(1,3) # where the car is
 
@@ -33,7 +63,10 @@ def do_the_stuff(switcherino, PRINT=False):
 		if PRINT : print "sorry, you lose! try again next time!"
 		return 0
 
-def main(num_tests=1000, PRINT=False):
+"""
+main program fxn
+"""
+def main(num_tests=100000, PRINT=False):
 	number_of_successes_upon_switching_doors=0
 	number_of_successes_upon_NOT_switching_doors=0
 	for i in range (0,(int)(num_tests)):
@@ -47,10 +80,12 @@ def main(num_tests=1000, PRINT=False):
 PRINT=False
 num_tests=1000
 for arg_num in range (0, len(sys.argv)):
+	if sys.argv[arg_num] == "-h" or sys.argv[arg_num] == "--help":
+		usage()
 	if sys.argv[arg_num] == "-p":
 		PRINT=True
-	if sys.argv[arg_num] == "-n":
-		num_tests = sys.argv[(arg_num+1)] # will cause index out of bounds issues if you don't specify a # of tests
+	if sys.argv[arg_num][:3] == "-n=":
+		num_tests = sys.argv[arg_num][3:] # will cause index out of bounds issues if you don't specify a # of tests
 
 main(num_tests, PRINT)
 
