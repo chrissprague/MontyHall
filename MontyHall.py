@@ -39,7 +39,7 @@ switcherino is also a boolean which is used to specify whether or not in this
 test we are considering the case in which the user picks the first door or 
 if they switch the door after the goat is exposed.
 """
-def do_the_stuff(switcherino, PRINT=False):
+def runMonty(switcherino, PRINT=False):
 	the_car = random.randint(1,3) # where the car is
 
 	door = random.randint(1,3) # the door you pick.
@@ -60,7 +60,7 @@ def do_the_stuff(switcherino, PRINT=False):
 		if PRINT : print("success, you've won the car!")
 		return 1
 	else:
-		if PRINT : print("sorry, you lose! try again next time!")
+		if PRINT : print("sorry, you lose! try again next time! (alternatively, if you were trying to get the goat, you win!)")
 		return 0
 
 """
@@ -70,8 +70,9 @@ def main(num_tests=100000, PRINT=False):
 	win_switch=0
 	win_no_switch=0
 	for i in range (0,(int)(num_tests)):
-		win_switch += do_the_stuff(True, PRINT)
-		win_no_switch += do_the_stuff(False, PRINT)
+		win_switch += runMonty(True, PRINT)
+		win_no_switch += runMonty(False, PRINT)
+	# NOTE: 	win_switch + win_no_switch != 100 (necessarily - these trials are completely independent of each other)
 	print("Success rate when switching doors: "+(str)((float)(win_switch) / \
 		(float)(num_tests) * 100) + "%")
 	print("Success rate when NOT switching doors: "+(str)((float)(win_no_switch) / \
@@ -94,6 +95,9 @@ for arg_num in range (0, len(sys.argv)):
 		except ValueError:
 			print("Bad value or format issue for number of tests, got '%s', aborting..." % sys.argv[arg_num][3:])
 			sys.exit(4)
+		if num_tests < 0:
+			print("Bad number of tests '%d', aborting..."%num_tests) # negative numbers, stop it nerds
+			sys.exit(5)
 	elif sys.argv[arg_num] != 'python' and sys.argv[arg_num] != 'MontyHall.py':
 		print("Unrecognized option '%s', aborting..." % sys.argv[arg_num])
 		sys.exit(3)
