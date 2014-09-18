@@ -12,10 +12,10 @@ import random , sys
 program usage statement
 """
 def usage():
-	print "usage: python3 MontyHall.py [-p] [-n=(number_of_tests)] [-h]"
-	print " -p 		turn on print statements for reports of each test"
-	print " -n=(#)		specify the number of tests to run. more tests=higher accuracy"
-	print " -h 		print usage/help statement"
+	print("usage: python3 MontyHall.py [-p] [-n=(number_of_tests)] [-h]")
+	print(" -p 		turn on print statements for reports of each test")
+	print(" -n=(#)		specify the number of tests to run. more tests=higher accuracy")
+	print(" -h 		print usage/help statement")
 
 """
 given an exposed door, a door that was initially chosen before the exposition,
@@ -43,51 +43,60 @@ def do_the_stuff(switcherino, PRINT=False):
 	the_car = random.randint(1,3) # where the car is
 
 	door = random.randint(1,3) # the door you pick.
-	if PRINT : print "door chosen is " + (str)(door)
+	if PRINT : print("door chosen is " + (str)(door))
 
 	exposed = random.randint(1,3) # the door that Monty Hall reveals to be goat-infused
 	while exposed == door or exposed == the_car: # it won't be your door and it won't be the car.
 		exposed = random.randint(1,3)
-	if PRINT : print "the host reveals that door " + (str)(exposed) + " is actually a goat"
+	if PRINT : print("the host reveals that door " + (str)(exposed) + " is actually a goat")
 
 	your_selection=0
 	if switcherino:
-		if PRINT : print "you decide to switch doors. --- ",
+		if PRINT : print("you decide to switch doors. --- ",)
 	else:
-		if PRINT : print "you decide to choose the same door. --- ",
+		if PRINT : print("you decide to choose the same door. --- ",)
 	your_selection = which_door(exposed,door,switcherino)
 	if your_selection == the_car:
-		if PRINT : print "success, you've won the car!"
+		if PRINT : print("success, you've won the car!")
 		return 1
 	else:
-		if PRINT : print "sorry, you lose! try again next time!"
+		if PRINT : print("sorry, you lose! try again next time!")
 		return 0
 
 """
 main program fxn
 """
 def main(num_tests=100000, PRINT=False):
-	number_of_successes_upon_switching_doors=0
-	number_of_successes_upon_NOT_switching_doors=0
+	win_switch=0
+	win_no_switch=0
 	for i in range (0,(int)(num_tests)):
-		number_of_successes_upon_switching_doors += do_the_stuff(True, PRINT)
-		number_of_successes_upon_NOT_switching_doors += do_the_stuff(False, PRINT)
-	print "Success rate when switching doors: "+(str)((float)(number_of_successes_upon_switching_doors) / \
-		(float)(num_tests) * 100) + "%"
-	print "Success rate when NOT switching doors: "+(str)((float)(number_of_successes_upon_NOT_switching_doors) / \
-		(float)(num_tests) * 100) + "%"
+		win_switch += do_the_stuff(True, PRINT)
+		win_no_switch += do_the_stuff(False, PRINT)
+	print("Success rate when switching doors: "+(str)((float)(win_switch) / \
+		(float)(num_tests) * 100) + "%")
+	print("Success rate when NOT switching doors: "+(str)((float)(win_no_switch) / \
+		(float)(num_tests) * 100) + "%")
 
 PRINT=False
-num_tests=1000
+num_tests=100000
 for arg_num in range (0, len(sys.argv)):
 	if sys.argv[arg_num] == "-h" or sys.argv[arg_num] == "--help":
 		usage()
-	if sys.argv[arg_num] == "-p":
+	elif sys.argv[arg_num] == "-p":
 		PRINT=True
-	if sys.argv[arg_num][:3] == "-n=":
-		num_tests = sys.argv[arg_num][3:] # will cause index out of bounds issues if you don't specify a # of tests
+	elif sys.argv[arg_num][:3] == "-n=":
+		num_tests = sys.argv[arg_num][3:]
+		if num_tests == "":
+			print("Bad format for num tests, aborting..." % sys.argv[arg_num][3:])
+			sys.exit(2)
+		try:
+			num_tests = int(num_tests)
+		except ValueError:
+			print("Bad value or format issue for number of tests, got '%s', aborting..." % sys.argv[arg_num][3:])
+			sys.exit(4)
+	elif sys.argv[arg_num] != 'python' and sys.argv[arg_num] != 'MontyHall.py':
+		print("Unrecognized option '%s', aborting..." % sys.argv[arg_num])
+		sys.exit(3)
 
+print("Number of tests (more tests = higher accuracy) " + (str)(num_tests))
 main(num_tests, PRINT)
-
-
-
