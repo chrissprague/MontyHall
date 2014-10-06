@@ -10,9 +10,9 @@ From [this site](http://marilynvossavant.com/game-show-problem/): <BR />
 
 Usage:
 
-	python3 MontyHall.py [-p] [-n=(number-of-tests)] [-h]<BR />
-		-p      turn on print statements for reports of each test<BR />
-		-n=(#)  specify the number of tests to run. more tests=higher accuracy<BR />
-		-h      print usage/help statement<BR />
+	python3 MontyHall.py [-p] [-n=(number-of-tests)] [-h]
+		-p      turn on print statements for reports of each test
+		-n=(#)  specify the number of tests to run. more tests=higher accuracy
+		-h      print usage/help statement
 
 Program is python 2 and 3 compatible.
