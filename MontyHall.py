@@ -36,7 +36,7 @@ with PRINT set to True, each test will report what happens (the door that
 was picked, exposed, selected afterwards, etc.)
 
 switcherino is also a boolean which is used to specify whether or not in this
-test we are considering the case in which the user picks the first door or 
+test we are considering the case in which the user picks the first door or
 if they switch the door after the goat is exposed.
 """
 def runMonty(switcherino, PRINT=False):
@@ -104,3 +104,4 @@ for arg_num in range (0, len(sys.argv)):
 
 print("Number of tests (more tests = higher accuracy) " + (str)(num_tests))
 main(num_tests, PRINT)
+
