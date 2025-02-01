@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 """
 program simulation of the Monty Hall problem.
@@ -12,7 +12,7 @@ import random , sys
 program usage statement
 """
 def usage():
-	print("usage: python3 MontyHall.py [-p] [-n=(number_of_tests)] [-h]")
+	print("usage: <script> [-p] [-n=(number_of_tests)] [-h]")
 	print(" -p 		turn on print statements for reports of each test")
 	print(" -n=(#)		specify the number of tests to run. more tests=higher accuracy")
 	print(" -h 		print usage/help statement")
@@ -80,6 +80,7 @@ def main(num_tests=100000, PRINT=False):
 
 PRINT=False
 num_tests=100000
+
 for arg_num in range (0, len(sys.argv)):
 	if sys.argv[arg_num] == "-h" or sys.argv[arg_num] == "--help":
 		usage()
@@ -98,9 +99,6 @@ for arg_num in range (0, len(sys.argv)):
 		if num_tests < 0:
 			print("Bad number of tests '%d', aborting..."%num_tests) # negative numbers, stop it nerds
 			sys.exit(5)
-	elif sys.argv[arg_num] != 'python' and sys.argv[arg_num] != 'MontyHall.py':
-		print("Unrecognized option '%s', aborting..." % sys.argv[arg_num])
-		sys.exit(3)
 
 print("Number of tests (more tests = higher accuracy) " + (str)(num_tests))
 main(num_tests, PRINT)
