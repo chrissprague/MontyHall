@@ -19,17 +19,19 @@ def usage():
     print(" -h      print usage/help statement")
 
 """
-given an exposed door, a door that was initially chosen before the exposition,
+given a list of exposed doors (default size=1), a door that was initially chosen before the exposition,
 and a boolean asking whether or not the player will switch doors, determine
 which door will ultimately be selected in this test.
 """
-def which_door(exposed, chosen, switch):
+def which_door(exposed_list, chosen, switch):
     if not switch:
         return chosen
-    doors =  [i for i in range(0,num_doors)]
+    #  TODO This is wickedly inefficient xdd
+    doors =  [i for i in range(1,num_doors+1)]
     for door in doors:
-        if chosen != door and exposed != door:
+        if chosen != door and door not in exposed_list:
             return door
+    raise Exception('No doors left - logic bug :(')
 
 """
 run the tests.
@@ -41,36 +43,36 @@ test we are considering the case in which the user picks the first door or
 if they switch the door after the goat is exposed.
 """
 def runMonty(switcherino, PRINT=False):
-    the_car = random.randint(0,num_doors) # where the car is
+    if PRINT : print('----- Simulation Start -----')
+    the_car = random.randint(1,num_doors) # where the car is
+    if PRINT : print("Car door           = " + (str)(the_car))
 
-    door = random.randint(0,num_doors) # the door you pick.
-    if PRINT : print("door chosen is " + (str)(door))
+    your_door = random.randint(1,num_doors) # the door you pick.
+    if PRINT : print("The door you chose = " + str(your_door))
 
     # Reveal all doors except the one you choose and 1 other
-    exposed = random.randint(0,num_doors) # the door that Monty Hall reveals to be goat-infused
     exposed_list = []
-    for i in range(0, num_doors):
-        if i != the_car and i != door:
+    for i in range(1, num_doors+1):
+        if i != the_car and i != your_door:
             exposed_list.append(i)
     # The number of exposed doors must equal the total number of doors less 2
     # If the number of doors left unexposed here is 1, congrats, we know algorithmically your initial choice was the car
     # But we still gotta make things fair
+    if len(exposed_list) > (num_doors - 2):
+        # We've exposed too much! Pick one at random to un-expose
+        random_door = random.randint(0,len(exposed_list)-1)
+        exposed_list.pop(random_door)
     
-    while exposed == door or exposed == the_car: # it won't be your door and it won't be the car.
-        exposed = random.randint(0,num_doors)
-    if PRINT : print("the host reveals that door " + (str)(exposed) + " is actually a goat")
+    if PRINT : print("Revealed (goats)   = " + str(exposed_list))
 
     your_selection=0
-    if switcherino:
-        if PRINT : print("you decide to switch doors. --- ",)
-    else:
-        if PRINT : print("you decide to choose the same door. --- ",)
-    your_selection = which_door(exposed,door,switcherino)
+    if PRINT : print("Switch             = " + str(switcherino))
+    your_selection = which_door(exposed_list,your_door,switcherino)
     if your_selection == the_car:
-        if PRINT : print("success, you've won the car!")
+        if PRINT : print("You win!")
         return 1
     else:
-        if PRINT : print("sorry, you lose! try again next time! (alternatively, if you were trying to get the goat, you win!)")
+        if PRINT : print("Sorry, you lose! (Alternatively, if you were trying to get the goat, you win!)")
         return 0
 
 """
@@ -120,8 +122,8 @@ for arg_num in range (0, len(sys.argv)):
         except ValueError:
             print("Bad value or format issue for number of doors, got '%s', aborting..." % sys.argv[arg_num][3:])
             sys.exit(4)
-        if num_doors < 0:
-            print("Bad number of doors '%d', aborting..."%num_doors) # negative numbers, stop it nerds
+        if num_doors < 3:
+            print("Bad number of doors '%d', must be >= 3; aborting..."%num_doors)
             sys.exit(5)
 
 print("Number of tests (more tests = higher accuracy) " + (str)(num_tests))

@@ -8,8 +8,12 @@ A concise python script to help in understanding the [Monty Hall problem](https:
 
 Usage:
 
-	python3 monty_hall.py [-p] [-n=(number-of-tests)] [-h]
-		-p      turn on print statements for reports of each test
-		-n=(#)  specify the number of tests to run. more tests=higher accuracy
-		-h      print usage/help statement
+```
+python3 monty_hall.py
+```
 
+Still not convinced? Try running the simulation with more doors and see the results for yourself, e.g.:
+
+```
+python3 monty_hall.py -d=100
+```
