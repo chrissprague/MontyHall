@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """
 program simulation of the Monty Hall problem.
@@ -6,7 +6,9 @@ program simulation of the Monty Hall problem.
 author: Christopher Sprague
 """
 
-import random , sys
+import random
+import sys
+import time
 
 """
 program usage statement
@@ -19,11 +21,11 @@ def usage():
     print(" -h      print usage/help statement")
 
 """
-given a list of exposed doors (default size=1), a door that was initially chosen before the exposition,
-and a boolean asking whether or not the player will switch doors, determine
-which door will ultimately be selected in this test.
+@param exposed_list: list of int. List of doors exposed to be goats (min 1.)
+@param chosen: int. The _initially_ player-selected door #
+@param switch: bool. Whether to switch doors to the unrevealed.
 """
-def which_door(exposed_list, chosen, switch):
+def which_door(exposed_list: list, chosen: int, switch: bool):
     if not switch:
         return chosen
     #  TODO This is wickedly inefficient xdd
@@ -34,18 +36,13 @@ def which_door(exposed_list, chosen, switch):
     raise Exception('No doors left - logic bug :(')
 
 """
-run the tests.
-with PRINT set to True, each test will report what happens (the door that
-was picked, exposed, selected afterwards, etc.)
-
-switcherino is also a boolean which is used to specify whether or not in this
-test we are considering the case in which the user picks the first door or
-if they switch the door after the goat is exposed.
+@param switch_door: boolean. Whether to switch door in this simulation run.
+@param PRINT: boolean. Print detailed test run info.
 """
-def runMonty(switcherino, PRINT=False):
+def runMonty(switch_dooor: bool, PRINT: bool = False) -> int:
     if PRINT : print('----- Simulation Start -----')
     the_car = random.randint(1,num_doors) # where the car is
-    if PRINT : print("Car door           = " + (str)(the_car))
+    if PRINT : print("Car door           = " + str(the_car))
 
     your_door = random.randint(1,num_doors) # the door you pick.
     if PRINT : print("The door you chose = " + str(your_door))
@@ -66,8 +63,8 @@ def runMonty(switcherino, PRINT=False):
     if PRINT : print("Revealed (goats)   = " + str(exposed_list))
 
     your_selection=0
-    if PRINT : print("Switch             = " + str(switcherino))
-    your_selection = which_door(exposed_list,your_door,switcherino)
+    if PRINT : print("Switch             = " + str(switch_dooor))
+    your_selection = which_door(exposed_list,your_door,switch_dooor)
     if your_selection == the_car:
         if PRINT : print("You win!")
         return 1
@@ -75,20 +72,20 @@ def runMonty(switcherino, PRINT=False):
         if PRINT : print("Sorry, you lose! (Alternatively, if you were trying to get the goat, you win!)")
         return 0
 
-"""
-main program fxn
-"""
 def main(num_tests=100000, PRINT=False):
     win_switch=0
     win_no_switch=0
+    sim_start = time.time()
     for i in range (0,(int)(num_tests)):
         win_switch += runMonty(True, PRINT)
         win_no_switch += runMonty(False, PRINT)
-    # NOTE:     win_switch + win_no_switch != 100 (necessarily - these trials are completely independent of each other)
-    print("Success rate when switching doors: "+(str)((float)(win_switch) / \
-        (float)(num_tests) * 100) + "%")
-    print("Success rate when NOT switching doors: "+(str)((float)(win_no_switch) / \
-        (float)(num_tests) * 100) + "%")
+    sim_end = time.time()
+    # NOTE: win_switch + win_no_switch != 100 (necessarily - these trials are completely independent of each other)
+    print("Success rate when switching doors: "+ str((float)(win_switch) / \
+        float(num_tests) * 100) + "%")
+    print("Success rate when NOT switching doors: " +str((float)(win_no_switch) / \
+        float(num_tests) * 100) + "%")
+    print("Total simulation time = " + str(sim_end-sim_start))
 
 PRINT=False
 num_tests=100000
@@ -126,7 +123,8 @@ for arg_num in range (0, len(sys.argv)):
             print("Bad number of doors '%d', must be >= 3; aborting..."%num_doors)
             sys.exit(5)
 
-print("Number of tests (more tests = higher accuracy) " + (str)(num_tests))
-print("Number of doors (more doors = more opportunity?) " + (str)(num_doors))
+print("Number of simulations: " + str(num_tests))
+print("Number of doors per simulation: " + str(num_doors))
+
 main(num_tests, PRINT)
 
