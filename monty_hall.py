@@ -14,11 +14,12 @@ import time
 program usage statement
 """
 def usage():
-    print("usage: <script> [-p] [-n=(number_of_tests)] [-h]")
+    print("usage: <script> [-p] [-n=(number_of_tests)] [-d=(number_of_doors)] [-h]")
     print(" -p      turn on print statements for reports of each test")
     print(" -n=(#)      specify the number of tests to run. more tests=higher accuracy")
     print(" -d=(#)      specify the number of doors in the simulation.")
     print(" -h      print usage/help statement")
+    sys.exit(0)
 
 """
 @param exposed_list: list of int. List of doors exposed to be goats (min 1.)
