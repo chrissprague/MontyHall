@@ -9,11 +9,11 @@ A concise python script to help in understanding the [Monty Hall problem](https:
 Usage:
 
 ```
-python3 monty_hall.py
+./monty
 ```
 
 Still not convinced? Try running the simulation with more doors and see the results for yourself, e.g.:
 
 ```
-python3 monty_hall.py -d=100
+./monty -d=100
 ```

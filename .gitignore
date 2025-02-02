@@ -1,0 +1,28 @@
+# Sphinx build directory
+_build/
+
+# Sphinx documentation outputs
+*.html
+*.doctree
+*.pickle
+*.json
+*.png
+*.jpg
+*.gif
+*.pdf
+*.svg
+*.log
+*.tex
+*.out
+
+# Sphinx project-specific files
+*.rst~
+*.md~
+*.mo
+*.pot
+*.po
+*.pyc
+*.pyo
+
+# Virtual environment
+.venv
