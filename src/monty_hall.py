@@ -29,10 +29,10 @@ def usage():
 def which_door(exposed_list: list, chosen: int, switch: bool):
     if not switch:
         return chosen
-    #  TODO This is wickedly inefficient xdd
-    doors =  [i for i in range(1,num_doors+1)]
-    for door in doors:
-        if chosen != door and door not in exposed_list:
+    # Since we know there's exactly one unexposed door besides the chosen one,
+    # we can find it by checking the one exposed door
+    for door in range(1, num_doors + 1):
+        if door != chosen and door not in exposed_list:
             return door
     raise Exception('No doors left - logic bug :(')
 
@@ -48,23 +48,22 @@ def runMonty(switch_dooor: bool, PRINT: bool = False) -> int:
     your_door = random.randint(1,num_doors) # the door you pick.
     if PRINT : print("The door you chose = " + str(your_door))
 
-    # Reveal all doors except the one you choose and 1 other
-    exposed_list = []
-    for i in range(1, num_doors+1):
+    # We only need to expose enough doors to leave one other option besides the chosen door
+    # First, find a door that's not the car and not the chosen door to keep unrevealed
+    keep_unrevealed = None
+    for i in range(1, num_doors + 1):
         if i != the_car and i != your_door:
-            exposed_list.append(i)
-    # The number of exposed doors must equal the total number of doors less 2
-    # If the number of doors left unexposed here is 1, congrats, we know algorithmically your initial choice was the car
-    # But we still gotta make things fair
-    if len(exposed_list) > (num_doors - 2):
-        # We've exposed too much! Pick one at random to un-expose
-        random_door = random.randint(0,len(exposed_list)-1)
-        exposed_list.pop(random_door)
-    
+            keep_unrevealed = i
+            break
+
+    # Now we know all other doors except your_door and keep_unrevealed are exposed
+    exposed_list = [i for i in range(1, num_doors + 1)
+                   if i != your_door and i != keep_unrevealed]
+
     if PRINT : print("Revealed (goats)   = " + str(exposed_list))
+    if PRINT : print("Switch             = " + str(switch_dooor))
 
     your_selection=0
-    if PRINT : print("Switch             = " + str(switch_dooor))
     your_selection = which_door(exposed_list,your_door,switch_dooor)
     if your_selection == the_car:
         if PRINT : print("You win!")
@@ -74,14 +73,26 @@ def runMonty(switch_dooor: bool, PRINT: bool = False) -> int:
         return 0
 
 def main(num_tests=100000, PRINT=False):
-    win_switch=0
-    win_no_switch=0
+    win_switch = 0
+    win_no_switch = 0
     sim_start = time.time()
-    for i in range (0,(int)(num_tests)):
-        win_switch += runMonty(True, PRINT)
-        win_no_switch += runMonty(False, PRINT)
+
+    # Run single simulation and track both outcomes
+    for i in range(num_tests):
+        the_car = random.randint(1, num_doors)
+        your_door = random.randint(1, num_doors)
+
+        # If you stick with your door
+        if your_door == the_car:
+            win_no_switch += 1
+
+        # If you switch, you win if you didn't pick the car initially
+        # (because Monty must reveal all other goats, leaving you the car)
+        if your_door != the_car:
+            win_switch += 1
+
     sim_end = time.time()
-    # NOTE: win_switch + win_no_switch != 100 (necessarily - these trials are completely independent of each other)
+
     print("Success rate when switching doors: "+ str((float)(win_switch) / \
         float(num_tests) * 100) + "%")
     print("Success rate when NOT switching doors: " +str((float)(win_no_switch) / \
