@@ -119,6 +119,45 @@ def create_prisoners_dilemma() -> Tuple[Game, Dict[str, Action]]:
     
     return Game([player1, player2], payoff_matrix), actions
 
+def create_battle_of_sexes() -> Tuple[Game, Dict[str, Action]]:
+    """
+    Create a Battle of the Sexes game.
+    
+    In this game, two players want to coordinate but have different preferences:
+    - Player 1 prefers going to the Opera
+    - Player 2 prefers going to the Football game
+    
+    The payoffs are:
+    - If they coordinate, both get positive payoff (but different amounts based on preference)
+    - If they don't coordinate, both get 0
+    
+    @return: Tuple of (Game instance, Dictionary mapping action names to Action objects)
+    """
+    # Define actions
+    opera = Action("opera")
+    football = Action("football")
+    
+    # Create players
+    player1 = Player("Player 1", [opera, football])
+    player2 = Player("Player 2", [opera, football])
+    
+    # Battle of the Sexes payoffs:
+    # (player1_action, player2_action): (player1_payoff, player2_payoff)
+    payoff_matrix = {
+        ("opera", "opera"): (3, 2),      # Both go to opera (Player 1 happier)
+        ("opera", "football"): (0, 0),    # They don't coordinate
+        ("football", "opera"): (0, 0),    # They don't coordinate
+        ("football", "football"): (2, 3)  # Both go to football (Player 2 happier)
+    }
+    
+    # Create actions dictionary
+    actions = {
+        "opera": opera,
+        "football": football
+    }
+    
+    return Game([player1, player2], payoff_matrix), actions
+
 def analyze_game(game: Game, actions: Dict[str, Action], verbose: bool = False) -> None:
     """
     Analyze the game to find Nash equilibria and optimal strategies.
@@ -151,6 +190,10 @@ def analyze_game(game: Game, actions: Dict[str, Action], verbose: bool = False) 
     if len(equilibria) == 1 and equilibria[0] == (actions["defect"].name, actions["defect"].name):
         print("\nThis is the standard Prisoner's Dilemma outcome:")
         print("Both players defect, demonstrating the conflict between individual and collective rationality")
+    # For Battle of the Sexes, we know there are two pure Nash equilibria
+    elif len(equilibria) == 2 and all(eq in [("opera", "opera"), ("football", "football")] for eq in equilibria):
+        print("\nThis is the Battle of the Sexes outcome:")
+        print("There are two Nash equilibria, demonstrating coordination problems")
 
 def parse_args():
     parser = argparse.ArgumentParser(
@@ -167,5 +210,12 @@ def parse_args():
 
 if __name__ == '__main__':
     args = parse_args()
+    
+    # Create and analyze both games
+    print("\nAnalyzing Prisoner's Dilemma:")
     game, actions = create_prisoners_dilemma()
+    analyze_game(game, actions, args.verbose)
+    
+    print("\nAnalyzing Battle of the Sexes:")
+    game, actions = create_battle_of_sexes()
     analyze_game(game, actions, args.verbose) 
