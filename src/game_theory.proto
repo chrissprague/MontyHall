@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package game_theory;
+
+// Represents a possible action in the game
+message Action {
+  string name = 1;
+  double payoff = 2;
+}
+
+// Represents a player in the game
+message Player {
+  string name = 1;
+  repeated Action actions = 2;
+  Action current_action = 3;
+}
+
+// Represents a payoff pair (player1_payoff, player2_payoff)
+message PayoffPair {
+  double player1_payoff = 1;
+  double player2_payoff = 2;
+}
+
+// Represents a game theory scenario with defined payoffs and players
+message Game {
+  repeated Player players = 1;
+  map<string, PayoffPair> payoff_matrix = 2;  // Key is "action1,action2"
+  repeated string nash_equilibria = 3;  // Format: "action1/action2"
+} 

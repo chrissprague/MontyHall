@@ -6,6 +6,8 @@ import sys
 import argparse
 from typing import List, Tuple, Dict, Set, Optional
 from dataclasses import dataclass
+from google.protobuf import message
+from game_theory_pb2 import Action as ActionProto, Player as PlayerProto, Game as GameProto, PayoffPair
 
 @dataclass
 class Action:
@@ -16,6 +18,18 @@ class Action:
     def __post_init__(self):
         if self.name is None:
             self.name = f"Action_{id(self)}"
+    
+    def to_proto(self) -> ActionProto:
+        """Convert this Action to a protobuf message."""
+        proto = ActionProto()
+        proto.name = self.name
+        proto.payoff = self.payoff
+        return proto
+    
+    @classmethod
+    def from_proto(cls, proto: ActionProto) -> 'Action':
+        """Create an Action from a protobuf message."""
+        return cls(name=proto.name, payoff=proto.payoff)
 
 @dataclass
 class Player:
@@ -29,6 +43,22 @@ class Player:
             self.name = f"Player_{id(self)}"
         if self.actions is None:
             self.actions = []
+    
+    def to_proto(self) -> PlayerProto:
+        """Convert this Player to a protobuf message."""
+        proto = PlayerProto()
+        proto.name = self.name
+        proto.actions.extend(action.to_proto() for action in self.actions)
+        if self.current_action:
+            proto.current_action.CopyFrom(self.current_action.to_proto())
+        return proto
+    
+    @classmethod
+    def from_proto(cls, proto: PlayerProto) -> 'Player':
+        """Create a Player from a protobuf message."""
+        actions = [Action.from_proto(action) for action in proto.actions]
+        current_action = Action.from_proto(proto.current_action) if proto.HasField('current_action') else None
+        return cls(name=proto.name, actions=actions, current_action=current_action)
 
 class Game:
     """
@@ -38,6 +68,43 @@ class Game:
         self.players = players
         self.payoff_matrix = payoff_matrix
         self.nash_equilibria: List[Tuple[str, str]] = []
+    
+    def to_proto(self) -> GameProto:
+        """Convert this Game to a protobuf message."""
+        proto = GameProto()
+        proto.players.extend(player.to_proto() for player in self.players)
+        
+        # Convert payoff matrix to map format
+        for (action1, action2), (payoff1, payoff2) in self.payoff_matrix.items():
+            key = f"{action1},{action2}"
+            payoff = PayoffPair()
+            payoff.player1_payoff = payoff1
+            payoff.player2_payoff = payoff2
+            proto.payoff_matrix[key] = payoff
+        
+        # Convert Nash equilibria to string format
+        proto.nash_equilibria.extend(f"{eq[0]}/{eq[1]}" for eq in self.nash_equilibria)
+        
+        return proto
+    
+    @classmethod
+    def from_proto(cls, proto: GameProto) -> 'Game':
+        """Create a Game from a protobuf message."""
+        players = [Player.from_proto(player) for player in proto.players]
+        
+        # Convert payoff matrix from map format
+        payoff_matrix = {}
+        for key, payoff in proto.payoff_matrix.items():
+            action1, action2 = key.split(',')
+            payoff_matrix[(action1, action2)] = (payoff.player1_payoff, payoff.player2_payoff)
+        
+        # Create game instance
+        game = cls(players=players, payoff_matrix=payoff_matrix)
+        
+        # Convert Nash equilibria from string format
+        game.nash_equilibria = [tuple(eq.split('/')) for eq in proto.nash_equilibria]
+        
+        return game
     
     def find_best_response(self, player: Player, other_player_action: str) -> Set[str]:
         """
