@@ -9,6 +9,37 @@ author: Christopher Sprague
 import random
 import sys
 import time
+import argparse
+
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description='Simulate the Monty Hall problem to demonstrate probability outcomes.',
+        formatter_class=argparse.RawDescriptionHelpFormatter
+    )
+    
+    parser.add_argument('-p', '--print',
+                       action='store_true',
+                       help='Print detailed information for each test run')
+    
+    parser.add_argument('-n', '--num-tests',
+                       type=int,
+                       default=100000,
+                       help='Number of test runs to perform (default: 100000)')
+    
+    parser.add_argument('-d', '--doors',
+                       type=int,
+                       default=3,
+                       help='Number of doors in the simulation (default: 3)')
+    
+    args = parser.parse_args()
+    
+    # Validate arguments
+    if args.doors < 3:
+        parser.error("Number of doors must be >= 3")
+    if args.num_tests < 1:
+        parser.error("Number of tests must be positive")
+        
+    return args
 
 """
 program usage statement
@@ -99,44 +130,16 @@ def main(num_tests=100000, PRINT=False):
         float(num_tests) * 100) + "%")
     print("Total simulation time = " + str(sim_end-sim_start))
 
-PRINT=False
-num_tests=100000
-num_doors=3
-
-for arg_num in range (0, len(sys.argv)):
-    if sys.argv[arg_num] == "-h" or sys.argv[arg_num] == "--help":
-        usage()
-    elif sys.argv[arg_num] == "-p":
-        PRINT=True
-    elif sys.argv[arg_num][:3] == "-n=":
-        num_tests = sys.argv[arg_num][3:]
-        if num_tests == "":
-            print("Bad format for num tests, aborting..." % sys.argv[arg_num][3:])
-            sys.exit(2)
-        try:
-            num_tests = int(num_tests)
-        except ValueError:
-            print("Bad value or format issue for number of tests, got '%s', aborting..." % sys.argv[arg_num][3:])
-            sys.exit(4)
-        if num_tests < 0:
-            print("Bad number of tests '%d', aborting..."%num_tests) # negative numbers, stop it nerds
-            sys.exit(5)
-    elif sys.argv[arg_num][:3] == "-d=":
-        num_doors = sys.argv[arg_num][3:]
-        if num_doors == "":
-            print("Bad format for num doors, aborting..." % sys.argv[arg_num][3:])
-            sys.exit(2)
-        try:
-            num_doors = int(num_doors)
-        except ValueError:
-            print("Bad value or format issue for number of doors, got '%s', aborting..." % sys.argv[arg_num][3:])
-            sys.exit(4)
-        if num_doors < 3:
-            print("Bad number of doors '%d', must be >= 3; aborting..."%num_doors)
-            sys.exit(5)
-
-print("Number of simulations: " + str(num_tests))
-print("Number of doors per simulation: " + str(num_doors))
-
-main(num_tests, PRINT)
+if __name__ == '__main__':
+    args = parse_args()
+    
+    # Set global variables from args
+    PRINT = args.print
+    num_tests = args.num_tests
+    num_doors = args.doors
+    
+    print(f"Number of simulations: {num_tests}")
+    print(f"Number of doors per simulation: {num_doors}")
+    
+    main(num_tests, PRINT)
 
