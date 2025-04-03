@@ -17,7 +17,7 @@ def parse_args():
         formatter_class=argparse.RawDescriptionHelpFormatter
     )
     
-    parser.add_argument('-p', '--print',
+    parser.add_argument('-v', '--verbose',
                        action='store_true',
                        help='Print detailed information for each test run')
     
@@ -45,8 +45,8 @@ def parse_args():
 program usage statement
 """
 def usage():
-    print("usage: <script> [-p] [-n=(number_of_tests)] [-d=(number_of_doors)] [-h]")
-    print(" -p      turn on print statements for reports of each test")
+    print("usage: <script> [-v] [-n=(number_of_tests)] [-d=(number_of_doors)] [-h]")
+    print(" -v      turn on print statements for reports of each test")
     print(" -n=(#)      specify the number of tests to run. more tests=higher accuracy")
     print(" -d=(#)      specify the number of doors in the simulation.")
     print(" -h      print usage/help statement")
@@ -69,15 +69,15 @@ def which_door(exposed_list: list, chosen: int, switch: bool):
 
 """
 @param switch_door: boolean. Whether to switch door in this simulation run.
-@param PRINT: boolean. Print detailed test run info.
+@param verbose: boolean. Print detailed test run info.
 """
-def runMonty(switch_dooor: bool, PRINT: bool = False) -> int:
-    if PRINT : print('----- Simulation Start -----')
+def runMonty(switch_dooor: bool, verbose: bool = False) -> int:
+    if verbose : print('----- Simulation Start -----')
     the_car = random.randint(1,num_doors) # where the car is
-    if PRINT : print("Car door           = " + str(the_car))
+    if verbose : print("Car door           = " + str(the_car))
 
     your_door = random.randint(1,num_doors) # the door you pick.
-    if PRINT : print("The door you chose = " + str(your_door))
+    if verbose : print("The door you chose = " + str(your_door))
 
     # We only need to expose enough doors to leave one other option besides the chosen door
     # First, find a door that's not the car and not the chosen door to keep unrevealed
@@ -91,19 +91,19 @@ def runMonty(switch_dooor: bool, PRINT: bool = False) -> int:
     exposed_list = [i for i in range(1, num_doors + 1)
                    if i != your_door and i != keep_unrevealed]
 
-    if PRINT : print("Revealed (goats)   = " + str(exposed_list))
-    if PRINT : print("Switch             = " + str(switch_dooor))
+    if verbose : print("Revealed (goats)   = " + str(exposed_list))
+    if verbose : print("Switch             = " + str(switch_dooor))
 
     your_selection=0
     your_selection = which_door(exposed_list,your_door,switch_dooor)
     if your_selection == the_car:
-        if PRINT : print("You win!")
+        if verbose : print("You win!")
         return 1
     else:
-        if PRINT : print("Sorry, you lose! (Alternatively, if you were trying to get the goat, you win!)")
+        if verbose : print("Sorry, you lose! (Alternatively, if you were trying to get the goat, you win!)")
         return 0
 
-def main(num_tests=100000, PRINT=False):
+def main(num_tests=100000, verbose=False):
     win_switch = 0
     win_no_switch = 0
     sim_start = time.time()
@@ -134,12 +134,12 @@ if __name__ == '__main__':
     args = parse_args()
     
     # Set global variables from args
-    PRINT = args.print
+    verbose = args.verbose
     num_tests = args.num_tests
     num_doors = args.doors
     
     print(f"Number of simulations: {num_tests}")
     print(f"Number of doors per simulation: {num_doors}")
     
-    main(num_tests, PRINT)
+    main(num_tests, verbose)
 
